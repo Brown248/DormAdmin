@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ผู้เช่า</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- เมนูด้านซ้าย -->
+  <div class="sidebar">
+    <h3>Dorm Management System</h3>
+    <a href="index.html"><i class="fa-solid fa-chart-line me-2"></i> Dashboard</a>
+    <a href="rooms.html"><i class="fa-solid fa-door-open me-2"></i> ห้องพัก</a>
+    <a href="tenants.html" class="active"><i class="fa-solid fa-user me-2"></i> ผู้เช่า</a>
+  </div>
+
+  <!-- เนื้อหาหลัก -->
+  <div class="content">
+    <h2 class="mb-4"><i class="fa-solid fa-user text-primary"></i> ข้อมูลผู้เช่า</h2>
+
+    <!-- Dropdown เลือกหอ -->
+    <div class="mb-3">
+      <label for="dormSelect" class="form-label">เลือกหอ:</label>
+      <select id="dormSelect" class="form-select w-auto" onchange="loadTenants()">
+        <option value="all" selected>รวมทั้งหมด</option>
+        <option value="A">หอ A</option>
+        <option value="B">หอ B</option>
+      </select>
+    </div>
+
+    <!-- ปุ่มเพิ่มผู้เช่า -->
+    <button class="btn btn-success mb-3"><i class="fa-solid fa-plus"></i> เพิ่มผู้เช่า</button>
+
+    <!-- ตารางรายชื่อผู้เช่า -->
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>ชื่อ-สกุล</th>
+          <th>ห้อง</th>
+          <th>เบอร์โทร</th>
+          <th>วันเข้าอยู่</th>
+          <th>วันครบสัญญา</th>
+          <th>สถานะชำระเงิน</th>
+          <th>จัดการ</th>
+        </tr>
+      </thead>
+      <tbody id="tenantsTable">
+        <!-- JS จะเติมข้อมูลที่นี่ -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const tenantsData = [
+      {name:'สุภัทรา ใจดี', dorm:'A', room:'A11', phone:'081-234-5678', start:'01/06/2024', end:'01/06/2025', paid:true},
+      {name:'เอกชัย สายทอง', dorm:'B', room:'B25', phone:'089-555-8822', start:'01/07/2024', end:'01/07/2025', paid:false},
+      {name:'มยุรี นิ่มนวล', dorm:'B', room:'B2', phone:'086-998-1122', start:'15/08/2024', end:'15/08/2025', paid:true}
+    ];
+
+    function loadTenants() {
+      const dorm = document.getElementById('dormSelect').value;
+      const tbody = document.getElementById('tenantsTable');
+      tbody.innerHTML = '';
+
+      const filtered = dorm === 'all' ? tenantsData : tenantsData.filter(t => t.dorm === dorm);
+
+      filtered.forEach(t => {
+        const statusBadge = t.paid ? 'bg-success' : 'bg-danger';
+        const statusText = t.paid ? 'จ่ายแล้ว' : 'ค้างชำระ';
+
+        tbody.innerHTML += `
+          <tr>
+            <td>${t.name}</td>
+            <td>${t.room}</td>
+            <td>${t.phone}</td>
+            <td>${t.start}</td>
+            <td>${t.end}</td>
+            <td><span class="badge ${statusBadge}">${statusText}</span></td>
+            <td>
+              <button class="btn btn-warning btn-sm"><i class="fa-solid fa-pen"></i></button>
+              <button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    loadTenants();
+  </script>
+</body>
+</html>

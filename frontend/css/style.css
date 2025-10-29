@@ -1,0 +1,60 @@
+/* 🔹 กำหนดฟอนต์และสีพื้นหลังหลัก */
+body {
+  background-color: #f8f9fa;
+  font-family: 'Prompt', sans-serif;
+}
+
+/* 🔹 สไตล์แถบด้านข้าง */
+.sidebar {
+  height: 100vh;
+  background-color: #2b2d42;
+  color: white;
+  padding-top: 30px;
+  position: fixed;
+  width: 250px;
+}
+
+.sidebar h3 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-weight: bold;
+}
+
+.sidebar a {
+  display: block;
+  color: #ccc;
+  text-decoration: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background-color: #8d99ae;
+  color: white;
+}
+
+/* 🔹 เนื้อหาหลัก (ย้ายออกมาจาก sidebar 260px) */
+.content {
+  margin-left: 260px;
+  padding: 30px;
+}
+
+/* 🔹 สไตล์การ์ด */
+.card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* 🔹 ตัวเลขใหญ่ใน Dashboard */
+.stat {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* 🔹 ตัวอักษรเล็ก */
+.small {
+  color: #6c757d;
+}

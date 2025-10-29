@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>จัดการห้องพัก</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- เมนูด้านซ้าย -->
+  <div class="sidebar">
+    <h3>Dorm Management System</h3>
+    <a href="index.html"><i class="fa-solid fa-chart-line me-2"></i> Dashboard</a>
+    <a href="rooms.html" class="active"><i class="fa-solid fa-door-open me-2"></i> ห้องพัก</a>
+    <a href="tenants.html"><i class="fa-solid fa-user me-2"></i> ผู้เช่า</a>
+  </div>
+
+  <!-- เนื้อหาหลัก -->
+  <div class="content">
+    <h2 class="mb-4"><i class="fa-solid fa-door-open text-primary"></i> จัดการห้องพัก</h2>
+
+    <!-- Dropdown เลือกหอ -->
+    <div class="mb-3">
+      <label for="dormSelect" class="form-label">เลือกหอ:</label>
+      <select id="dormSelect" class="form-select w-auto" onchange="loadRooms()">
+        <option value="all" selected>รวมทั้งหมด</option>
+        <option value="A">หอ A</option>
+        <option value="B">หอ B</option>
+        <option value="C">หอ C</option>
+      </select>
+    </div>
+
+    <!-- ปุ่มเพิ่มห้อง -->
+    <button class="btn btn-success mb-3"><i class="fa-solid fa-plus"></i> เพิ่มห้องพัก</button>
+
+    <!-- ตารางข้อมูลห้อง -->
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>หอ</th>
+          <th>หมายเลขห้อง</th>
+          <th>ราคา</th>
+          <th>สถานะ</th>
+          <th>จัดการ</th>
+        </tr>
+      </thead>
+      <tbody id="roomsTable">
+        <!-- JS จะเติมข้อมูลที่นี่ -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const roomsData = [
+      {dorm:'A', room:'A1', price:3500, status:'occupied'},
+      {dorm:'A', room:'A2', price:3500, status:'vacant'},
+      {dorm:'B', room:'B1', price:3500, status:'occupied'},
+      {dorm:'B', room:'B2', price:3500, status:'maintenance'},
+    ];
+
+    function loadRooms() {
+      const dorm = document.getElementById('dormSelect').value;
+      const tbody = document.getElementById('roomsTable');
+      tbody.innerHTML = '';
+
+      const filtered = dorm === 'all' ? roomsData : roomsData.filter(r => r.dorm === dorm);
+
+      filtered.forEach(room => {
+        let badgeClass = '';
+        let statusText = '';
+        if(room.status === 'occupied'){badgeClass='bg-success'; statusText='มีผู้เช่า';}
+        else if(room.status === 'vacant'){badgeClass='bg-secondary'; statusText='ว่าง';}
+        else if(room.status === 'maintenance'){badgeClass='bg-warning'; statusText='ซ่อมบำรุง';}
+
+        tbody.innerHTML += `
+          <tr>
+            <td>${room.dorm}</td>
+            <td>${room.room}</td>
+            <td>฿ ${room.price}</td>
+            <td><span class="badge ${badgeClass}">${statusText}</span></td>
+            <td>
+              <button class="btn btn-warning btn-sm"><i class="fa-solid fa-pen"></i></button>
+              <button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    loadRooms();
+  </script>
+</body>
+</html>

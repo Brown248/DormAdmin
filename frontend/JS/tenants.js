@@ -1,43 +1,86 @@
-// 🔹 tenants.js
-// จัดการข้อมูลผู้เช่า
+document.addEventListener('DOMContentLoaded', () => {
+  const tenantsTableBody = document.querySelector('#tenantsTable tbody');
+  const newTenantBtn = document.getElementById('newTenantBtn');
+  const tenantModal = document.getElementById('tenantModal');
+  const tenantForm = document.getElementById('tenantForm');
+  const cancelTenantBtn = document.getElementById('cancelTenantBtn');
 
-// ข้อมูลตัวอย่างผู้เช่า
-const tenantsData = [
-  {name:'สุภัทรา ใจดี', dorm:'A', room:'A1', phone:'081-234-5678', start:'01/06/2024', end:'01/06/2025', paid:true},
-  {name:'เอกชัย สายทอง', dorm:'B', room:'B5', phone:'089-555-8822', start:'01/07/2024', end:'01/07/2025', paid:false},
-  {name:'มยุรี นิ่มนวล', dorm:'A', room:'A2', phone:'086-998-1122', start:'15/08/2024', end:'15/08/2025', paid:true}
-];
+  let tenants = [
+    { id:1, name:'สมชาย ใจดี', room:'101', phone:'0812345678', start_date:'2025-09-01', payment_status:'paid' },
+    { id:2, name:'สายฝน นุ่มนา', room:'202', phone:'0829876543', start_date:'2025-10-01', payment_status:'due' },
+  ];
 
-// 🔹 ฟังก์ชันโหลดผู้เช่าตามหอ
-function loadTenants() {
-  const dorm = document.getElementById('dormSelect').value; // ดึงหอที่เลือก
-  const tbody = document.getElementById('tenantsTable');
-  tbody.innerHTML = ''; // ล้างข้อมูลเดิม
-
-  // กรองข้อมูลตามหอ ถ้าเลือก 'all' แสดงทั้งหมด
-  const filtered = dorm === 'all' ? tenantsData : tenantsData.filter(t => t.dorm === dorm);
-
-  // เติมข้อมูลในตาราง
-  filtered.forEach(t => {
-    const statusBadge = t.paid ? 'bg-success' : 'bg-danger';
-    const statusText = t.paid ? 'จ่ายแล้ว' : 'ค้างชำระ';
-
-    tbody.innerHTML += `
-      <tr>
+  function renderTenants() {
+    tenantsTableBody.innerHTML = '';
+    tenants.forEach(t => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
         <td>${t.name}</td>
         <td>${t.room}</td>
-        <td>${t.phone}</td>
-        <td>${t.start}</td>
-        <td>${t.end}</td>
-        <td><span class="badge ${statusBadge}">${statusText}</span></td>
+        <td>${t.phone || '-'}</td>
+        <td>${t.start_date || '-'}</td>
+        <td>${t.payment_status === 'paid' ? 'ชำระแล้ว' : '<span style="color:var(--danger)">ค้างชำระ</span>'}</td>
         <td>
-          <button class="btn btn-warning btn-sm"><i class="fa-solid fa-pen"></i></button>
-          <button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+          <button class="btn" data-id="${t.id}" data-action="edit">แก้ไข</button>
+          <button class="btn ghost" data-id="${t.id}" data-action="delete">ลบ</button>
         </td>
-      </tr>
-    `;
-  });
-}
+      `;
+      tenantsTableBody.appendChild(tr);
+    });
+  }
 
-// เรียกใช้ตอนโหลดหน้า
-loadTenants();
+  newTenantBtn.addEventListener('click', () => {
+    tenantForm.reset();
+    tenantForm.dataset.editId = '';
+    tenantModal.classList.remove('hidden');
+  });
+
+  cancelTenantBtn.addEventListener('click', () => {
+    tenantModal.classList.add('hidden');
+  });
+
+  tenantForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(tenantForm);
+    const payload = {
+      name: fd.get('name'),
+      room: fd.get('room_number'),
+      phone: fd.get('phone'),
+      start_date: fd.get('start_date'),
+      payment_status: fd.get('payment_status')
+    };
+    const editId = tenantForm.dataset.editId;
+    if (editId) {
+      tenants = tenants.map(t => t.id == editId ? {...t, ...payload} : t);
+    } else {
+      const newId = Math.max(0, ...tenants.map(t => t.id)) + 1;
+      tenants.push({ id: newId, ...payload });
+    }
+    tenantModal.classList.add('hidden');
+    renderTenants();
+  });
+
+  tenantsTableBody.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const { id, action } = btn.dataset;
+    if (action === 'edit') {
+      const t = tenants.find(x => x.id == id);
+      if (!t) return;
+      tenantForm.name.value = t.name;
+      tenantForm.room_number.value = t.room;
+      tenantForm.phone.value = t.phone;
+      tenantForm.start_date.value = t.start_date;
+      tenantForm.payment_status.value = t.payment_status;
+      tenantForm.dataset.editId = t.id;
+      tenantModal.classList.remove('hidden');
+    } else if (action === 'delete') {
+      if (confirm('ต้องการลบผู้เช่ารายนี้ใช่หรือไม่?')) {
+        tenants = tenants.filter(x => x.id != id);
+        renderTenants();
+      }
+    }
+  });
+
+  renderTenants();
+});

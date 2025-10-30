@@ -1,45 +1,91 @@
-// 🔹 rooms.js
-// จัดการข้อมูลห้องพักบนหน้าห้องพัก
+document.addEventListener('DOMContentLoaded', () => {
+  const roomsTableBody = document.querySelector('#roomsTable tbody');
+  const newRoomBtn = document.getElementById('newRoomBtn');
+  const roomModal = document.getElementById('roomModal');
+  const roomForm = document.getElementById('roomForm');
+  const cancelRoomBtn = document.getElementById('cancelRoomBtn');
+  const roomModalTitle = document.getElementById('roomModalTitle');
 
-// ข้อมูลตัวอย่างของห้องพัก
-const roomsData = [
-  {dorm:'A', room:'A1', price:3500, status:'occupied'},
-  {dorm:'A', room:'A2', price:3600, status:'vacant'},
-  {dorm:'B', room:'B1', price:3200, status:'occupied'},
-  {dorm:'B', room:'B2', price:3300, status:'maintenance'},
-];
+  //ข้อมูลจำลอง
+  let rooms = [
+    { id: 1, number: '101', type: 'single', price: 3500, status: 'ไม่ว่าง' },
+    { id: 2, number: '102', type: 'double', price: 5000, status: 'ว่าง' },
+    { id: 3, number: '201', type: 'studio', price: 7000, status: 'ไม่ว่าง' },
+  ];
 
-// 🔹 ฟังก์ชันโหลดห้องตามหอ
-function loadRooms() {
-  const dorm = document.getElementById('dormSelect').value; // ดึงค่าหอที่เลือก
-  const tbody = document.getElementById('roomsTable');
-  tbody.innerHTML = ''; // ล้างข้อมูลเดิม
-
-  // กรองข้อมูลตามหอ ถ้าเลือก 'all' แสดงทั้งหมด
-  const filtered = dorm === 'all' ? roomsData : roomsData.filter(r => r.dorm === dorm);
-
-  // เติมข้อมูลในตาราง
-  filtered.forEach(room => {
-    let badgeClass = '';
-    let statusText = '';
-    if(room.status === 'occupied'){badgeClass='bg-success'; statusText='มีผู้เช่า';}
-    else if(room.status === 'vacant'){badgeClass='bg-secondary'; statusText='ว่าง';}
-    else if(room.status === 'maintenance'){badgeClass='bg-warning'; statusText='ซ่อมบำรุง';}
-
-    tbody.innerHTML += `
-      <tr>
-        <td>${room.dorm}</td>
-        <td>${room.room}</td>
-        <td>฿ ${room.price}</td>
-        <td><span class="badge ${badgeClass}">${statusText}</span></td>
+  function renderRooms() {
+    roomsTableBody.innerHTML = '';
+    rooms.forEach(r => {const tr = document.createElement('tr');
+      tr.innerHTML = `
+      <td>${r.number}</td>
+      <td>${r.type}</td>
+        <td>${r.price}</td>
+        <td>${r.status}</td>
         <td>
-          <button class="btn btn-warning btn-sm"><i class="fa-solid fa-pen"></i></button>
-          <button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
-        </td>
-      </tr>
-    `;
-  });
-}
+          <button class="btn" data-id="${r.id}" data-action="edit">แก้ไข</button>
+          <button class="btn ghost" data-id="${r.id}" data-action="delete">ลบ</button>
+        </td>`;
+      roomsTableBody.appendChild(tr);
+    });
+  }
 
-// เรียกใช้ตอนโหลดหน้า
-loadRooms();
+  //สำหรับสร้างห้องใหม่
+  newRoomBtn.addEventListener('click', () => {
+    roomModalTitle.textContent = 'ห้องใหม่';
+    roomForm.reset();
+    roomForm.dataset.editId = '';
+    roomModal.classList.remove('hidden');
+  });
+
+  cancelRoomBtn.addEventListener('click', () => {
+    roomModal.classList.add('hidden');
+  });
+
+  // ส่งฟอร์ม
+  roomForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = new FormData(roomForm);
+    const payload = {
+      number: formData.get('room_number'),
+      type: formData.get('type'),
+      price: Number(formData.get('price')),
+      status: 'available'
+    };
+
+    const editId = roomForm.dataset.editId;
+    if (editId) {
+
+      rooms = rooms.map(r => r.id == editId ? {...r, ...payload} : r);
+    } else {
+
+      const newId = Math.max(0, ...rooms.map(r => r.id)) + 1;
+      rooms.push({ id: newId, ...payload });
+    }
+    roomModal.classList.add('hidden');
+    renderRooms();
+  });
+
+  roomsTableBody.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+    if (action === 'edit') {
+      const room = rooms.find(r => r.id == id);
+      if (!room) return;
+      roomModalTitle.textContent = 'แก้ไขห้อง';
+      roomForm.room_number.value = room.number;
+      roomForm.type.value = room.type;
+      roomForm.price.value = room.price;
+      roomForm.dataset.editId = room.id;
+      roomModal.classList.remove('hidden');
+    } else if (action === 'delete') {
+      if (confirm('ต้องการลบห้องนี้ใช่หรือไม่?')) {
+        rooms = rooms.filter(r => r.id != id);
+        renderRooms();
+      }
+    }
+  });
+
+  renderRooms();
+});

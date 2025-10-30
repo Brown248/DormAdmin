@@ -1,60 +1,101 @@
-/* 🔹 กำหนดฟอนต์และสีพื้นหลังหลัก */
-body {
-  background-color: #f8f9fa;
-  font-family: 'Prompt', sans-serif;
+/* style.css — โลโก้โทนสะอาด ใช้ spacing และ border-radius เล็กน้อย */
+
+/* Reset เบื้องต้น */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial; }
+:root{
+  --bg:#f6f8fb;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#2563eb; /* น้ำเงิน */
+  --accent-2:#10b981; /* เขียว */
+  --danger:#ef4444;
+  --shadow: 0 6px 18px rgba(12, 24, 48, 0.08);
 }
 
-/* 🔹 สไตล์แถบด้านข้าง */
+/* Layout */
+.app { display: flex; min-height:100vh; background:var(--bg); color:#111827; }
+
+/* Sidebar */
 .sidebar {
-  height: 100vh;
-  background-color: #2b2d42;
-  color: white;
-  padding-top: 30px;
-  position: fixed;
-  width: 250px;
+  width:220px;
+  background:linear-gradient(180deg,#0f172a 0%, #0b131f 100%);
+  color:#fff;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+.brand h1 { font-size:20px; margin-bottom:4px; }
+.brand p { font-size:13px; color:rgba(255,255,255,0.7); }
+.nav { display:flex; flex-direction:column; gap:8px; }
+.nav-item {
+  color:rgba(255,255,255,0.9);
+  text-decoration:none;
+  padding:8px 10px;
+  border-radius:8px;
+  font-size:14px;
+}
+.nav-item:hover { background:rgba(255,255,255,0.03); }
+.nav-item.active { background: rgba(255,255,255,0.06); box-shadow: inset 0 1px 0 rgba(255,255,255,0.02); }
+
+/* Sidebar footer */
+.sidebar-footer { margin-top:auto; }
+
+/* Main */
+.main { flex:1; padding:28px; }
+
+/* Header */
+.header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+.header h2 { font-size:20px; }
+.header-actions { display:flex; gap:10px; align-items:center; }
+.header-actions input[type="search"]{
+  padding:8px 10px; border-radius:8px; border:1px solid #e5e7eb; background: #fff; min-width:180px;
 }
 
-.sidebar h3 {
-  text-align: center;
-  margin-bottom: 40px;
-  font-weight: bold;
-}
-
-.sidebar a {
-  display: block;
-  color: #ccc;
-  text-decoration: none;
-  padding: 12px 20px;
-  border-radius: 10px;
-  transition: 0.3s;
-}
-
-.sidebar a:hover,
-.sidebar a.active {
-  background-color: #8d99ae;
-  color: white;
-}
-
-/* 🔹 เนื้อหาหลัก (ย้ายออกมาจาก sidebar 260px) */
-.content {
-  margin-left: 260px;
-  padding: 30px;
-}
-
-/* 🔹 สไตล์การ์ด */
+/* Cards */
+.cards { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:18px; }
 .card {
-  border: none;
-  border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background:var(--card); padding:16px; border-radius:12px; box-shadow:var(--shadow);
 }
+.card h3 { font-size:20px; margin-bottom:6px; }
+.card p { color:var(--muted); font-size:13px; }
 
-/* 🔹 ตัวเลขใหญ่ใน Dashboard */
-.stat {
-  font-size: 22px;
-  font-weight: bold;
+/* Panel / Table */
+.panel { background:var(--card); padding:16px; border-radius:12px; box-shadow:var(--shadow); }
+.table { width:100%; border-collapse:collapse; margin-top:10px; }
+.table thead th { text-align:left; padding:10px 8px; font-size:13px; color:var(--muted); border-bottom:1px solid #eef2f7; }
+.table tbody td { padding:12px 8px; border-bottom:1px solid #f3f6fa; font-size:14px; }
+
+/* Buttons */
+.btn {
+  padding:8px 12px; border-radius:8px; border:0; cursor:pointer; font-weight:600;
+  background: #f3f4f6; color:#111827;
 }
+.btn.primary { background:var(--accent); color:white; }
+.btn.ghost { background:transparent; border:1px solid rgba(0,0,0,0.06); }
 
-/* 🔹 ตัวอักษรเล็ก */
-.small {
-  color: #6c757d;
+/* Modal */
+.modal { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; background:rgba(7,11,20,0.4); }
+.hidden { display:none; }
+.modal-content {
+  background:var(--card); padding:18px; border-radius:12px; width:400px; box-shadow:var(--shadow);
+}
+.modal-content form { display:flex; flex-direction:column; gap:10px; }
+.modal-content label { display:flex; flex-direction:column; gap:6px; font-size:13px; color:#374151; }
+.modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:6px; }
+
+/* Responsive */
+@media (max-width:900px){
+  .sidebar { display:none; }
+  .cards { grid-template-columns:repeat(2,1fr); }
+  .main { padding:16px; }
+}
+@media (max-width:480px){
+  .cards { grid-template-columns:1fr; }
+  .modal-content { width:90%; }
 }
